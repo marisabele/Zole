@@ -1,7 +1,13 @@
 import unittest
 from zolegame.player import Player
+from zolegame.rules import Rules
 
 class PlayerTest(unittest.TestCase):
+
+    class PlayerFirstCard(Player):
+        def _getCard(self, requested_suit_card):
+            return Rules.allowed_cards(requested_suit_card, self.cards)[0]
+
     def setUp(self):
         self.player = Player("0000", "testPlayer", 100)
 
@@ -22,3 +28,18 @@ class PlayerTest(unittest.TestCase):
 
     def test_resp(self):
         self.assertEqual("{'name': 'testPlayer', 'uuid': '0000'}", str(self.player))
+
+    def test_cardSelect(self):
+        #add cards
+        player = self.PlayerFirstCard("0000", "testPlayer", 100)
+        cardSet = [1, 2, 15, 18, 19]
+        player.addCards(cardSet)
+        self.assertEqual(len(cardSet), len(player.cards))
+
+        playedCard = player.selectCard(0)
+        self.assertEqual(1, playedCard)
+        self.assertEqual(len(cardSet)-1, len(player.cards))
+
+        playedCard = player.selectCard(14)
+        self.assertEqual(15, playedCard)
+        self.assertEqual(len(cardSet)-2, len(player.cards))

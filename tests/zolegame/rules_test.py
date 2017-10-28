@@ -1,5 +1,5 @@
 import unittest
-import zolegame.utils.rules as U
+import zolegame.rules as U
 
 class RulesTest(unittest.TestCase):
 

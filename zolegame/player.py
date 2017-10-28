@@ -1,3 +1,4 @@
+from rules import Rules
 
 class Player:
     def __init__(self, uuid, name, points):
@@ -18,7 +19,15 @@ class Player:
         pass
     def onContract(self, uuid, contract):
         pass
+
+    def _getCard(self, requested_suit_card):
+        return None
+
     def selectCard(self, requested_suit_card):
+        card = self._getCard(requested_suit_card)
+        if card in Rules.allowed_cards(requested_suit_card, self.cards):
+            self.cards.remove(card)
+            return card
         pass
 
     def __repr__(self):

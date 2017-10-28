@@ -40,7 +40,7 @@ class BaseGameTest(unittest.TestCase):
 
         def test_cardDeal(self):
             self.game.addPlayers(self.playerA, self.playerB, self.playerC)
-            self.game.dealCards()
+            self.game._dealCards()
             self.assertEqual(8, len(self.game.players[0].cards))
             self.assertEqual(8, len(self.game.players[1].cards))
             self.assertEqual(8, len(self.game.players[2].cards))
