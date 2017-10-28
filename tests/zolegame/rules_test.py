@@ -36,3 +36,9 @@ class RulesTest(unittest.TestCase):
         self.assertEqual([18, 22, 23], U.Rules.allowedCards(14, [18, 22, 23]))
         self.assertEqual([0, 24], U.Rules.allowedCards(18, [24, 0]))
         self.assertEqual([24], U.Rules.allowedCards(22, [24, 0]))
+
+    def test_nextPlayer(self):
+        self.assertEqual(1, U.Rules.nextPlayer(0))
+        self.assertEqual(2, U.Rules.nextPlayer(1))
+        self.assertEqual(0, U.Rules.nextPlayer(2))
+        self.assertEqual(1, U.Rules.nextPlayer(0))

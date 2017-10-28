@@ -44,3 +44,8 @@ class Rules:
         if len(return_list) == 0:
             return_list = my_deck
         return sorted(return_list)
+
+    @classmethod
+    def nextPlayer(self, first_index):
+        seq=[0,1,2,0,1,2]
+        return seq[first_index+1]

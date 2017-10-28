@@ -26,9 +26,24 @@ class BaseGame(object):
 
     def play(self):
         self._dealCards()
-        self.selectContract()
+        self._selectContract()
+        self._playTricks()
 
-    def selectContract(self, contracts = None):
+    def _playTricks(self):
+        first = 0
+        for i in xrange(len(self.players[0].cards)):
+            second = Rules.nextPlayer(first)
+            last = Rules.nextPlayer(second)
+            first_index, gameEnd = self._playTrick([self.players[first].uuid,
+                                                   self.players[second].uuid,
+                                                   self.players[last].uuid])
+            first = [self.players.index(x)
+                     for x in self.players
+                     if x.uuid == first_index][0]
+            if gameEnd != 0:
+                break
+
+    def _selectContract(self, contracts = None):
         # Ask for game type and deside what to do with table cards
 
         for p in self.players:
@@ -64,27 +79,17 @@ class BaseGame(object):
             else:
                 self.selected_game = Contract.PARTNER
 
-
     def _playTrick(self,player_list):
         trick =[]
         first_card = None
         for pIndex in player_list:
             p = next(x for x in self.players if x.uuid == pIndex)
             card = p.selectCard(first_card)
-            #card = p.selectCard(rules.allowCards(requiredCard, self.state.cards[pIndex]))  #ask for card
-            #print ("%s Selected card: %s"%(p,card))
-            #if card not in self.state.cards[pIndex]:            #check if card is allowed
-            #    raise NotImplementedError
-
             trick.append(card)
-
-            #self.state.cards[pIndex].remove(card)
-            #on first hand update requested cards
             if first_card == None:
                 first_card = card
 
         winner = player_list[Rules.bestCard(trick)]
-        #print ("winner from : %s is a %d"%(trick,winner))
 
         #Add trick cards to player
         self.tricks[winner].append(trick)
