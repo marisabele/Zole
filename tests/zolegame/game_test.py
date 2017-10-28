@@ -7,8 +7,8 @@ class BaseGameTest(unittest.TestCase):
         class PlayerGreat(Player):
             def selectContract(self, contract_types):
                 return 't'
-            def selectCard(self):
-                return cards[0]
+            def _getCard(self, requested_suit_card):
+                return self.cards[0]
 
         class PlayerSmall(Player):
             def selectContract(self, contract_types):
@@ -27,10 +27,10 @@ class BaseGameTest(unittest.TestCase):
             self.playerB = Player("ffff", "B", 100)
             self.playerC = Player("0300", "C", 100)
 
-            self.player_great = self.PlayerGreat("Great", "Great", 100)
-            self.player_partner = self.PlayerPartner("Partner", "Partner", 100)
-            self.player_big = self.PlayerBig("Big", "Big", 100)
-            self.player_small = self.PlayerSmall("Small", "Small", 100)
+            self.player_great = self.PlayerGreat("01", "Great", 100)
+            self.player_partner = self.PlayerPartner("02", "Partner", 100)
+            self.player_big = self.PlayerBig("03", "Big", 100)
+            self.player_small = self.PlayerSmall("04", "Small", 100)
 
         def test_addPlayers(self):
             self.game.addPlayers(self.playerA, self.playerB, self.playerC)
@@ -50,16 +50,19 @@ class BaseGameTest(unittest.TestCase):
 
         def  test_selectContractFirst(self):
              self.game.addPlayers(self.player_great, self.player_great, self.player_great)
+             self.game._dealCards()
              self.game.selectContract()
              self.assertEqual('t', self.game.selected_game)
 
         def  test_selectContractSecond(self):
              self.game.addPlayers(self.player_partner, self.player_great, self.player_great)
+             self.game._dealCards()
              self.game.selectContract()
              self.assertEqual('t', self.game.selected_game)
 
         def  test_selectContractLast(self):
              self.game.addPlayers(self.player_partner, self.player_partner, self.player_great)
+             self.game._dealCards()
              self.game.selectContract()
              self.assertEqual('t', self.game.selected_game)
 

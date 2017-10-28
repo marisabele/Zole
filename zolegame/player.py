@@ -25,7 +25,7 @@ class Player:
 
     def selectCard(self, requested_suit_card):
         card = self._getCard(requested_suit_card)
-        if card in Rules.allowed_cards(requested_suit_card, self.cards):
+        if card in Rules.allowedCards(requested_suit_card, self.cards):
             self.cards.remove(card)
             return card
         pass

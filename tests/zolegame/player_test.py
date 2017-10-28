@@ -6,7 +6,7 @@ class PlayerTest(unittest.TestCase):
 
     class PlayerFirstCard(Player):
         def _getCard(self, requested_suit_card):
-            return Rules.allowed_cards(requested_suit_card, self.cards)[0]
+            return Rules.allowedCards(requested_suit_card, self.cards)[0]
 
     def setUp(self):
         self.player = Player("0000", "testPlayer", 100)

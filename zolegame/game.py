@@ -1,6 +1,7 @@
 import itertools
 import random
 from constansts import *
+from rules import Rules
 
 class BaseGame(object):
 
@@ -13,11 +14,15 @@ class BaseGame(object):
                              Contract.PARTNER,
                              Contract.PARTNER]
         self.selected_game = None
+        self.tricks = {}
 
     def addPlayers(self, playerA, playerB, playerC):
         self.players.append(playerA)
         self.players.append(playerB)
         self.players.append(playerC)
+
+        for p in self.players:
+            self.tricks[p.uuid] = []
 
     def play(self):
         self._dealCards()
@@ -41,8 +46,8 @@ class BaseGame(object):
                 p.addCards(table)
 
                 #Ask solo player to place 2 cards
-                self.playTrick([p.uuid])
-                self.playTrick([p.uuid])
+                self._playTrick([p.uuid])
+                self._playTrick([p.uuid])
                 break
 
             if contract == Contract.BIG:  #Start Solo game without table cards
@@ -60,8 +65,39 @@ class BaseGame(object):
                 self.selected_game = Contract.PARTNER
 
 
-    def playTrick(self,player_list):
-        pass
+    def _playTrick(self,player_list):
+        trick =[]
+        first_card = None
+        for pIndex in player_list:
+            p = next(x for x in self.players if x.uuid == pIndex)
+            card = p.selectCard(first_card)
+            #card = p.selectCard(rules.allowCards(requiredCard, self.state.cards[pIndex]))  #ask for card
+            #print ("%s Selected card: %s"%(p,card))
+            #if card not in self.state.cards[pIndex]:            #check if card is allowed
+            #    raise NotImplementedError
+
+            trick.append(card)
+
+            #self.state.cards[pIndex].remove(card)
+            #on first hand update requested cards
+            if first_card == None:
+                first_card = card
+
+        winner = player_list[Rules.bestCard(trick)]
+        #print ("winner from : %s is a %d"%(trick,winner))
+
+        #Add trick cards to player
+        self.tricks[winner].append(trick)
+
+        '''
+        #For special game type check status
+        if self.state.gameType == 's':
+            winnP = next(x for x in self.players if x.index == winner)
+            if 's' == winnP.gameRole:
+                print ("Trick winner is a SMALL!!!")
+                return winner, 1    #game over
+        '''
+        return winner, 0
 
     def _dealCards(self, card_deck = None):
         #mix up the deck
