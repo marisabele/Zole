@@ -7,24 +7,24 @@ from zolegame.constansts import *
 
 class BaseGameTest(unittest.TestCase):
         class PlayerGreat(Player):
-            def selectContract(self, contract_types):
+            def _getContract(self, contract_types):
                 return 't'
             def _getCard(self, requested_suit_card):
                 return self.cards[0]
 
         class PlayerSmall(Player):
-            def selectContract(self, contract_types):
+            def _getContract(self, contract_types):
                 return 's'
 
         class PlayerPartner(Player):
-            def selectContract(self, contract_types):
+            def _getContract(self, contract_types):
                 return 'p'
         class PlayerBig(Player):
-            def selectContract(self, contract_types):
+            def _getContract(self, contract_types):
                 return 'b'
 
         class PlayerRandom(Player):
-            def selectContract(self, contract_types):
+            def _getContract(self, contract_types):
                 return 't'
             def _getCard(self, requested_suit_card):
                 return Rules.allowedCards(requested_suit_card, self.cards)[0]
@@ -69,7 +69,6 @@ class BaseGameTest(unittest.TestCase):
              self.game._dealCards()
              self.game._selectContract()
              self.assertEqual('t', self.game.selected_game)
-             #self.assertEqual(['t','p', 'p'], self.game.player_roles)
 
         def  test_selectContractSecond(self):
              self.game.addPlayers(self.player_partner, self.player_great, self.player_great)
@@ -77,7 +76,6 @@ class BaseGameTest(unittest.TestCase):
              self.game._dealCards()
              self.game._selectContract()
              self.assertEqual('t', self.game.selected_game)
-             #self.assertEqual(['p','t', 'p'], self.game.player_roles)
 
         def  test_selectContractLast(self):
              self.game.addPlayers(self.player_partner, self.player_partner, self.player_great)
@@ -85,32 +83,27 @@ class BaseGameTest(unittest.TestCase):
              self.game._dealCards()
              self.game._selectContract()
              self.assertEqual('t', self.game.selected_game)
-             #self.assertEqual(['p','p', 't'], self.game.player_roles)
 
         def  test_selectContractTable(self):
              self.game.addPlayers(self.player_partner, self.player_partner, self.player_partner)
              self.game._selectContract()
              self.assertEqual('d', self.game.selected_game)
-             #self.assertEqual(['p','p', 'p'], self.game.player_roles)
 
         def  test_selectContractBig(self):
              self.game.addPlayers(self.player_partner, self.player_partner, self.player_big)
              self.game._selectContract()
              self.assertEqual('b', self.game.selected_game)
-             #self.assertEqual(['p','p', 'b'], self.game.player_roles)
 
         def  test_selectContractSmall(self):
              self.game.addPlayers(self.player_partner, self.player_partner, self.player_small)
              self.game._selectContract()
              self.assertEqual('s', self.game.selected_game)
-             #self.assertEqual(['p','p', 's'], self.game.player_roles)
 
         def  test_selectContractNone(self):
              self.game.addPlayers(self.player_partner, self.player_partner, self.player_partner)
              self.game.game_types = ['t','p']
              self.game._selectContract()
              self.assertEqual('p', self.game.selected_game)
-             #self.assertEqual(['p','p', 'p'], self.game.player_roles)
 
         def test_cardDigg(self):
             self.game.addPlayers(self.player_great, self.player_partner, self.player_small)
@@ -123,7 +116,6 @@ class BaseGameTest(unittest.TestCase):
             self.game.initNewGame()
             self.game._dealCards()
             self.game._selectContract()
-            #self.assertEqual(0, len(self.game.tricks['03']))
             self.assertEqual(0, len(self.player_big.tricks))
 
         def test_payAllCardsTableGame(self):
@@ -325,3 +317,13 @@ class BaseGameTest(unittest.TestCase):
             self.assertEqual(9, card_points[1])
             self.assertEqual(6, card_points[2])
             self.assertEqual(2, trick_count[0])
+
+        def test_playGame(self):
+            player01 = self.PlayerRandom("01", "player01", 100)
+            player02 = self.PlayerRandom("02", "player02", 100)
+            player03 = self.PlayerRandom("03", "player03", 100)
+            self.game.addPlayers(player01, player02, player03)
+            self.game.play()
+            self.assertTrue(self.game.players[0].points != 100)
+            self.assertTrue(self.game.players[1].points != 100)
+            self.assertTrue(self.game.players[2].points != 100)

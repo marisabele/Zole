@@ -10,6 +10,13 @@ class PlayerTest(unittest.TestCase):
 
     def setUp(self):
         self.player = Player("0000", "testPlayer", 100)
+    def test_playerInterface(self):
+        self.player.newGame();
+        self.player.addCards([0,1,2,3,4,5,6,7])
+        self.player.updatePoints(2)
+        self.assertEqual(None, self.player.selectContract(['t','p']))
+        self.assertEqual(None, self.player.selectCard())
+        self.player.addTrick([0, 1, 2])
 
     def test_addCards(self):
         cards = tuple(xrange(8))

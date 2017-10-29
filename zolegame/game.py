@@ -18,11 +18,14 @@ class BaseGame(object):
         self.players.append(playerC)
 
     def play(self):
+        self.initNewGame()
         self._dealCards()
         self._selectContract()
         self._playTricks()
         card_points, trick_count = self._countPoints()
-        player_points = self._countGamePoints()
+        player_points = self._countGamePoints(card_points, trick_count)
+        for i in xrange(3):
+            self.players[i].updatePoints(player_points[i])
 
     def initNewGame(self):
         for p in self.players:
@@ -153,7 +156,6 @@ class BaseGame(object):
             trick.append(card)
             if first_card == None:
                 first_card = card
-
         winner = player_list[Rules.bestCard(trick)]
 
         #Add trick cards to player
