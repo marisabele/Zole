@@ -2,11 +2,12 @@ from rules import Rules
 from constansts import *
 
 class Player:
-    def __init__(self, uuid, name, points):
+    def __init__(self, uuid, name, points, client = None):
         self.name = name
         self.uuid = uuid
         self.points = points
-        #send to player init message [uuid, name, points]
+        self.client = client
+        self._sendToClient("init", [uuid, name, points])
 
     def newGame(self):
         self.cards = []
@@ -15,41 +16,43 @@ class Player:
 
     def addCards(self, cards):
         self.cards.extend(cards)
-        #send to player API "addCards"
+        self._sendToClient("addCards", cards)
 
     def updatePoints(self, pointChange):
         self.points += pointChange
+        self._sendToClient("pointChange", pointChange)
 
     def _getContract(self, contract_types):
-        #request from API "selectContract"
-        return None
+        return self._sendToClient("selectcontract", contract_types)
 
     def selectContract(self, contract_types):
         self.contract = self._getContract(contract_types)
-        # send to other players contract select message [uuid, contract]
+        self._sendToPublic("selectcontract", [self.uuid, self.contract])
         return self.contract
 
     def _getCard(self, requested_suit_card):
-        # request from API "selectCard"
-        return None
+        return self._sendToClient("selectcard", Rules.allowedCards(requested_suit_card, self.cards))
 
     def selectCard(self, requested_suit_card):
         card = self._getCard(requested_suit_card)
         if card in Rules.allowedCards(requested_suit_card, self.cards):
             if len(self.cards)>8:
-                # send to other players card message [uuid, Null]
-                pass
+                self._sendToPublic("selectcard", [self.uuid, None])
             else:
-                # send to other players card message [uuid, card]
-                pass
+                self._sendToPublic("selectcard", [self.uuid, card])
             self.cards.remove(card)
             return card
 
     def addTrick(self, trick):
-        if len(trick)==3:
-            #send to public trick message [uuid, trick]
-            pass
+        if len(trick) == 3:
+            self._sendToClient("trick", trick)
         self.tricks.append(trick)
+
+    def _sendToClient(self, message, data):
+        return None
+
+    def _sendToPublic(self,message, data):
+        pass
 
     def __repr__(self):
         return str({

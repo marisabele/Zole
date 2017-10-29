@@ -1,4 +1,4 @@
-class BasePlayer(object):
+class PlayerInterface(object):
     def __init__(self):
         pass
 
