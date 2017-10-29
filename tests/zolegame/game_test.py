@@ -160,6 +160,24 @@ class BaseGameTest(unittest.TestCase):
             self.assertEqual([[25], [18], [21, 19, 9]], player01.tricks)
             self.assertEqual([[4, 2, 7]], player02.tricks)
 
+        def test_playLooseSmallGame(self):
+            player01 = self.PlayerFirst("01", "player01", 100)
+            player02 = self.PlayerFirst("02", "player02", 100)
+            player03 = self.PlayerFirst("03", "player03", 100)
+            self.game.addPlayers(player01, player02, player03)
+            self.game.initNewGame()
+            player01.cards=[15,16,2, 5, 10]
+            player02.cards=[1, 6, 12]
+            player03.cards=[0, 7, 13]
+
+            self.game._selectContract()
+            player01.contract = Contract.SMALL
+            self.game.selected_game = Contract.SMALL
+
+            self.game._playTricks()
+            self.assertEqual([[15],[16],[7, 5, 6]], player01.tricks)
+            self.assertEqual([[2,1,0]], player03.tricks)
+
         def test_countTricks(self):
             tricks, points = self.game._countCardPoints([[0]])
             self.assertEqual(1, tricks)
@@ -299,8 +317,11 @@ class BaseGameTest(unittest.TestCase):
             self.game.addPlayers(player01, player02, player03)
             self.game.initNewGame()
             player01.tricks = [[0,1,2],[3]]
-            player02.tricks = [[0,1,2],[3]]
-            player03.tricks = [[0,1,2],[3]]
+            player02.tricks = [[0,1],[3]]
+            player03.tricks = [[0],[3]]
 
-            #self.game._countPoints()
-            #self.assertEqual(True, self.game._countPoints())
+            card_points, trick_count = self.game._countPoints()
+            self.assertEqual(12, card_points[0])
+            self.assertEqual(9, card_points[1])
+            self.assertEqual(6, card_points[2])
+            self.assertEqual(2, trick_count[0])

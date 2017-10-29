@@ -21,7 +21,7 @@ class BaseGame(object):
         self._dealCards()
         self._selectContract()
         self._playTricks()
-        card_points, trick_count = self._countCardPoints()
+        card_points, trick_count = self._countPoints()
         player_points = self._countGamePoints()
 
     def initNewGame(self):
@@ -41,11 +41,9 @@ class BaseGame(object):
         if great_points > 30:
             return -1 *(2 + point_gain) * 2, 2 + point_gain
         if small_tricks == 8:
-           return -1 *(4 + point_gain) * 2, 4 + point_gain
+            return -1 *(4 + point_gain) * 2, 4 + point_gain
         if small_tricks > 0:
-           return -1 *(3 + point_gain) * 2, 3 + point_gain
-
-        raise NotImplementedError
+            return -1 *(3 + point_gain) * 2, 3 + point_gain
 
     def _countGamePoints(self, card_points, trick_counts):
         player_points = [0, 0, 0]
@@ -92,7 +90,7 @@ class BaseGame(object):
         card_points = []
         trick_count = []
         for p in self.players:
-            trickCount, points = self._countTricks(p.tricks)
+            trickCount, points = self._countCardPoints(p.tricks)
             card_points.append(points)
             trick_count.append(trickCount)
         return card_points, trick_count
@@ -111,7 +109,6 @@ class BaseGame(object):
 
             # In small game: small player loose game on first winning trick
             if self.players[first].contract == Contract.SMALL:
-                print ("Trick winner is a SMALL!!!")
                 break
 
     def _selectContract(self, contracts = None):
