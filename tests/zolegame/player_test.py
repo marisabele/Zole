@@ -15,7 +15,7 @@ class PlayerTest(unittest.TestCase):
         self.player.addCards([0,1,2,3,4,5,6,7])
         self.player.updatePoints(2)
         self.assertEqual(None, self.player.selectContract(['t','p']))
-        self.assertEqual(None, self.player.selectCard())
+        self.assertEqual(None, self.player.selectCard(None))
         self.player.addTrick([0, 1, 2])
 
     def test_addCards(self):
