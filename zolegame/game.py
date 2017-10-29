@@ -10,37 +10,108 @@ class BaseGame(object):
         self.bet_size = bet_size
         self.players = []
         self.table_cards = []
-        self.player_roles = [Contract.PARTNER,
-                             Contract.PARTNER,
-                             Contract.PARTNER]
         self.selected_game = None
-        self.tricks = {}
 
     def addPlayers(self, playerA, playerB, playerC):
         self.players.append(playerA)
         self.players.append(playerB)
         self.players.append(playerC)
 
-        for p in self.players:
-            self.tricks[p.uuid] = []
-
     def play(self):
         self._dealCards()
         self._selectContract()
         self._playTricks()
+        card_points, trick_count = self._countCardPoints()
+        player_points = self._countGamePoints()
+
+    def initNewGame(self):
+        for p in self.players:
+            p.newGame()
+
+    def _countParterGamePoints(self, great_points, point_gain ,small_tricks):
+        small_points = 120 - great_points
+
+        if small_tricks == 0:     #If great winn all tricks
+            return (3 + point_gain) * 2, -1 * (3 + point_gain)
+        if great_points > 90:
+            return (2 + point_gain) * 2, -1 * (2 + point_gain)
+        if great_points > 60:
+            return (1 + point_gain) * 2, -1 * (1 + point_gain)
+
+        if great_points > 30:
+            return -1 *(2 + point_gain) * 2, 2 + point_gain
+        if small_tricks == 8:
+           return -1 *(4 + point_gain) * 2, 4 + point_gain
+        if small_tricks > 0:
+           return -1 *(3 + point_gain) * 2, 3 + point_gain
+
+        raise NotImplementedError
+
+    def _countGamePoints(self, card_points, trick_counts):
+        player_points = [0, 0, 0]
+        roles = [x.contract for x in self.players]
+        small_points = 0
+        if (Contract.TABLE in roles) or (Contract.BIG in roles):
+            great_seat = roles.index(self.selected_game)
+            small_tricks = sum(trick_counts) - trick_counts[great_seat]
+            point_gain = 0
+            if (Contract.BIG in roles):
+                point_gain = 4
+            great_points, small_points = self._countParterGamePoints(card_points[great_seat],
+                                                point_gain,
+                                                small_tricks)
+            player_points[great_seat] = great_points
+
+        if Contract.SMALL in roles:
+            great_seat = roles.index(self.selected_game)
+            if trick_counts[great_seat] != 0:
+                player_points[great_seat] = -7 * 2
+                small_points = 7
+            else:
+                player_points[great_seat] = 6 * 2
+                small_points = -6
+
+        if self.selected_game == Contract.DESK:
+            max_tricks = [x if x == max(trick_counts) else 0 for x in trick_counts]
+            max_trick_points = map(lambda x,y:x*y,max_tricks, card_points)
+            looser = max_trick_points.index(max(max_trick_points))
+            player_points[looser] = -2 * 2
+            small_points = 2
+
+        player_points = [x if x!=0 else small_points for x in player_points]
+        return player_points
+
+    def _countCardPoints(self,tricks):
+        cards = []
+        for i in itertools.chain(*tricks):
+            cards.append(i)
+        points = sum([Cards.POINTS[x] for x in cards])
+        return len(tricks), points
+
+    def _countPoints(self):
+        card_points = []
+        trick_count = []
+        for p in self.players:
+            trickCount, points = self._countTricks(p.tricks)
+            card_points.append(points)
+            trick_count.append(trickCount)
+        return card_points, trick_count
 
     def _playTricks(self):
         first = 0
         for i in xrange(len(self.players[0].cards)):
             second = Rules.nextPlayer(first)
             last = Rules.nextPlayer(second)
-            first_index, gameEnd = self._playTrick([self.players[first].uuid,
+            first_index = self._playTrick([self.players[first].uuid,
                                                    self.players[second].uuid,
                                                    self.players[last].uuid])
-            first = [self.players.index(x)
+            first = next(self.players.index(x)
                      for x in self.players
-                     if x.uuid == first_index][0]
-            if gameEnd != 0:
+                     if x.uuid == first_index)
+
+            # In small game: small player loose game on first winning trick
+            if self.players[first].contract == Contract.SMALL:
+                print ("Trick winner is a SMALL!!!")
                 break
 
     def _selectContract(self, contracts = None):
@@ -50,12 +121,9 @@ class BaseGame(object):
             contract = p.selectContract(self.game_types)
             if contract not in self.game_types:
                 raise IndentationError
-            p.onContract(p.uuid, contract)
-            print ("Player %s selected game type: %s"%(p.uuid, self.game_types))
 
             if contract == Contract.TABLE:  #Start normal Solo game with table cards
                 self.selected_game = Contract.TABLE
-
                 #Add table cards to solo player
                 table = self.table_cards
                 p.addCards(table)
@@ -92,17 +160,11 @@ class BaseGame(object):
         winner = player_list[Rules.bestCard(trick)]
 
         #Add trick cards to player
-        self.tricks[winner].append(trick)
+        for p in self.players:
+            if p.uuid == winner:
+                p.addTrick(trick)
 
-        '''
-        #For special game type check status
-        if self.state.gameType == 's':
-            winnP = next(x for x in self.players if x.index == winner)
-            if 's' == winnP.gameRole:
-                print ("Trick winner is a SMALL!!!")
-                return winner, 1    #game over
-        '''
-        return winner, 0
+        return winner
 
     def _dealCards(self, card_deck = None):
         #mix up the deck

@@ -13,6 +13,7 @@ class PlayerTest(unittest.TestCase):
 
     def test_addCards(self):
         cards = tuple(xrange(8))
+        self.player.newGame()
         self.player.addCards(cards)
         self.assertEqual(cards[0], self.player.cards[0])
         self.assertEqual(8, len(self.player.cards))
@@ -32,6 +33,7 @@ class PlayerTest(unittest.TestCase):
     def test_cardSelect(self):
         #add cards
         player = self.PlayerFirstCard("0000", "testPlayer", 100)
+        player.newGame()
         cardSet = [1, 2, 15, 18, 19]
         player.addCards(cardSet)
         self.assertEqual(len(cardSet), len(player.cards))
