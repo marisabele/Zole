@@ -2,12 +2,13 @@ from rules import Rules
 from constansts import *
 
 class Player:
-    def __init__(self, uuid, name, points, client = None):
+    def __init__(self, uuid, name, points, client = None, game = None):
         self.name = name
         self.uuid = uuid
         self.points = points
         self.client = client
-        self._sendToClient("init", [uuid, name, points])
+        self.game = game
+        self.sendToClient("init", [uuid, name, points])
 
     def newGame(self):
         self.cards = []
@@ -16,14 +17,14 @@ class Player:
 
     def addCards(self, cards):
         self.cards.extend(cards)
-        self._sendToClient("addCards", cards)
+        self.sendToClient("addCards", cards)
 
     def updatePoints(self, pointChange):
         self.points += pointChange
-        self._sendToClient("pointChange", pointChange)
+        self.sendToClient("pointChange", pointChange)
 
     def _getContract(self, contract_types):
-        return self._sendToClient("selectcontract", contract_types)
+        return self.sendToClient("selectcontract", contract_types)
 
     def selectContract(self, contract_types):
         self.contract = self._getContract(contract_types)
@@ -31,7 +32,7 @@ class Player:
         return self.contract
 
     def _getCard(self, requested_suit_card):
-        return self._sendToClient("selectcard", Rules.allowedCards(requested_suit_card, self.cards))
+        return self.sendToClient("selectcard", Rules.allowedCards(requested_suit_card, self.cards))
 
     def selectCard(self, requested_suit_card):
         card = self._getCard(requested_suit_card)
@@ -45,14 +46,17 @@ class Player:
 
     def addTrick(self, trick):
         if len(trick) == 3:
-            self._sendToClient("trick", trick)
+            self._sendToPublic("trick", trick)
+        self.sendToClient("trick", trick)
         self.tricks.append(trick)
 
-    def _sendToClient(self, message, data):
-        return None
+    def sendToClient(self, message, data):
+        if self.client != None:
+            self.client.receiveMessage(message, data)
 
     def _sendToPublic(self,message, data):
-        pass
+        if self.game != None:
+            self.game.sendToPlayers(self.uuid, message, data)
 
     def __repr__(self):
         return str({

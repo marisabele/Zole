@@ -327,3 +327,35 @@ class BaseGameTest(unittest.TestCase):
             self.assertTrue(self.game.players[0].points != 100)
             self.assertTrue(self.game.players[1].points != 100)
             self.assertTrue(self.game.players[2].points != 100)
+
+        def test_playerCommunication(self):
+            class PlayerComm(Player):
+                def sendToClient(self, message, data):
+                    self.message = message
+                    self.data = data
+
+            player01 = PlayerComm("01", "player01", 100, None, self.game)
+            player02 = PlayerComm("02", "player02", 100, None, self.game)
+            player03 = PlayerComm("03", "player03", 100, None, self.game)
+            self.game.addPlayers(player01, player02, player03)
+            #send to all
+            self.game.sendToPlayers(None, "testsMsg", [0,0,0])
+            self.assertEqual("testsMsg", player01.message)
+            self.assertEqual("testsMsg", player02.message)
+            self.assertEqual("testsMsg", player03.message)
+            self.assertEqual( [0,0,0], player01.data)
+
+            #send to all excet one
+            self.game.sendToPlayers("02", "newMessage", [1,2,3])
+            self.assertEqual("newMessage", player01.message)
+            self.assertEqual("testsMsg", player02.message)
+            self.assertEqual("newMessage", player03.message)
+            self.assertEqual( [1,2,3], player03.data)
+
+            #player send to public except self
+            self.game.sendToPlayers("02", "newMessage", [1,2,3])
+            player02._sendToPublic("playerMessage",[4])
+            self.assertEqual("playerMessage", player01.message)
+            self.assertEqual("testsMsg", player02.message)
+            self.assertEqual("playerMessage", player03.message)
+            self.assertEqual( [4], player03.data)

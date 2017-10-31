@@ -177,3 +177,8 @@ class BaseGame(object):
             p.addCards(cards)
 
         self.table_cards = card_deck       #remaining cards to the table
+
+    def sendToPlayers(self, except_player, message, data):
+        for p in self.players:
+            if p.uuid != except_player:
+                p.sendToClient(message, data)
