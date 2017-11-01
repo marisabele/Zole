@@ -32,7 +32,6 @@ class BaseGame(object):
             p.newGame()
 
     def _countParterGamePoints(self, great_points, point_gain ,small_tricks):
-        small_points = 120 - great_points
 
         if small_tricks == 0:     #If great winn all tricks
             return (3 + point_gain) * 2, -1 * (3 + point_gain)
