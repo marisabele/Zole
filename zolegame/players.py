@@ -16,7 +16,7 @@ class PlayerInterface(object):
         pass
     def selectCard(self, cards):
         # Player must select card to play
-        raise NotImplemented
+        raise NotImplementedError("Your client does not implement selectCard method")
     def cardPlaced(self, uuid, card):
         # player placed card on table
         pass
