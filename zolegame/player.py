@@ -21,33 +21,33 @@ class Player:
 
     def updatePoints(self, pointChange):
         self.points += pointChange
-        self.sendToClient("pointChange", pointChange)
+        self.sendToClient("updatePoints", pointChange)
 
     def _getContract(self, contract_types):
-        return self.sendToClient("selectcontract", contract_types)
+        return self.sendToClient("selectContract", contract_types)
 
     def selectContract(self, contract_types):
         self.contract = self._getContract(contract_types)
-        self._sendToPublic("selectcontract", [self.uuid, self.contract])
+        self._sendToPublic("contractSelected", [self.uuid, self.contract])
         return self.contract
 
     def _getCard(self, requested_suit_card):
-        return self.sendToClient("selectcard", Rules.allowedCards(requested_suit_card, self.cards))
+        return self.sendToClient("selectCard", Rules.allowedCards(requested_suit_card, self.cards))
 
     def selectCard(self, requested_suit_card):
         card = self._getCard(requested_suit_card)
         if card in Rules.allowedCards(requested_suit_card, self.cards):
             if len(self.cards)>8:
-                self._sendToPublic("selectcard", [self.uuid, None])
+                self._sendToPublic("cardPlaced", [self.uuid, None])
             else:
-                self._sendToPublic("selectcard", [self.uuid, card])
+                self._sendToPublic("cardPlaced", [self.uuid, card])
             self.cards.remove(card)
             return card
 
     def addTrick(self, trick):
         if len(trick) == 3:
-            self._sendToPublic("trick", trick)
-        self.sendToClient("trick", trick)
+            self._sendToPublic("trick", [self.uuid, trick])
+        self.sendToClient("trick", [self.uuid, trick])
         self.tricks.append(trick)
 
     def sendToClient(self, message, data):

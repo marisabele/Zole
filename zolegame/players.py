@@ -1,55 +1,51 @@
 class PlayerInterface(object):
-    def __init__(self):
-        pass
-
-    def newGame(self, players, contract_types, bet_size):
+    def newGame(self, uuid, name , points):
         # Start new game
         pass
-
     def addCards(self, cards):
         # Deal cards to the player
         pass
-
+    def updatePoints(self, points):
+        # Update points
+        pass
     def selectContract(self, types):
         # Player must select a contract type
-        raise NotImplemented
-
-    def contractSelected(self, game_type):
+        raise NotImplementedError("Your client does not implement selectContract method")
+    def contractSelected(self, uuid, game_type):
+        # player selected contract type
         pass
-
-    def selectCard(self, card_on_table):
+    def selectCard(self, cards):
         # Player must select card to play
         raise NotImplemented
-
+    def cardPlaced(self, uuid, card):
+        # player placed card on table
+        pass
     def trickEnd(self, winner, trick_cards):
+        # Announce trick winner
         pass
-
-    def gameEnd(self, winner):
+    def __init__(self):
         pass
-
-    def receive_message(self, message):
+    def receiveMessage(self, message, data):
         # Called from game server
-        message_type = message["message_type"]
         response = []
-        if message_type == "create":
-            self.newGame(message["users"], message["type"], message["bet"])
-            return response
-        if message_type == "start":
-            self.add_cards(message["cards"])
-            return response
-        if message_type == "choose":
-            return self.select_contract(message["types"])
-        if message_type == "contract_selected":
-            self.contract_selected(message["type"])
-            return response
-        if message_type == "addcards":
-            self.add_cards(message["cards"])
-            return response
-        if message_type == "selectcard":
-            return self.select_card(message["table"])
-        if message_type == "trick":
-            self.trick_end(message["trick"])
-            return response
-        if message_type == "gameend":
-            self.trick_end(message["winner"])
-            return response
+        if message == "init":
+            self.newGame(data[0], data[1], data[2])
+            return None
+        if message == "addCards":
+            self.addCards(data)
+            return None
+        if message == "updatePoints":
+            self.updatePoints(data)
+            return None
+        if message == "selectContract":
+            return self.selectContract(data)
+        if message == "contractSelected":
+            self.contractSelected(data[0], data[1])
+            return None
+        if message == "selectCard":
+            return self.selectCard(data)
+        if message == "cardPlaced":
+            return self.cardPlaced(data[0], data[1])
+        if message == "trick":
+            self.trickEnd(data[0], data[1])
+            return None
