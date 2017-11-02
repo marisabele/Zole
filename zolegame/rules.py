@@ -1,4 +1,3 @@
-import copy
 from constansts import *
 
 class Rules:
@@ -49,3 +48,28 @@ class Rules:
     def nextPlayer(self, first_index):
         seq=[0,1,2,0,1,2]
         return seq[first_index+1]
+
+    @classmethod
+    def countCardPoints(self, tricks):
+        cards = []
+        for i in itertools.chain(*tricks):
+            cards.append(i)
+        points = sum([Cards.POINTS[x] for x in cards])
+        return len(tricks), points
+        
+    @classmethod
+    def countPartnerGamePoints(self, great_points, point_gain ,small_tricks):
+
+        if small_tricks == 0:     #If great winn all tricks
+            return (3 + point_gain) * 2, -1 * (3 + point_gain)
+        if great_points > 90:
+            return (2 + point_gain) * 2, -1 * (2 + point_gain)
+        if great_points > 60:
+            return (1 + point_gain) * 2, -1 * (1 + point_gain)
+
+        if great_points > 30:
+            return -1 *(2 + point_gain) * 2, 2 + point_gain
+        if small_tricks == 8:
+            return -1 *(4 + point_gain) * 2, 4 + point_gain
+        if small_tricks > 0:
+            return -1 *(3 + point_gain) * 2, 3 + point_gain

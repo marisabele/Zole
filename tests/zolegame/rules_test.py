@@ -42,3 +42,49 @@ class RulesTest(unittest.TestCase):
         self.assertEqual(2, U.Rules.nextPlayer(1))
         self.assertEqual(0, U.Rules.nextPlayer(2))
         self.assertEqual(1, U.Rules.nextPlayer(0))
+
+    def test_countTricks(self):
+        tricks, points = U.Rules.countCardPoints([[0]])
+        self.assertEqual(1, tricks)
+        self.assertEqual(3, points)
+
+        tricks, points = U.Rules.countCardPoints([[0],[1]])
+        self.assertEqual(2, tricks)
+        self.assertEqual(6, points)
+
+        tricks, points = U.Rules.countCardPoints([[0, 1, 2]])
+        self.assertEqual(1, tricks)
+        self.assertEqual(9, points)
+
+        tricks, points = U.Rules.countCardPoints([[3],[0, 1, 2]])
+        self.assertEqual(2, tricks)
+        self.assertEqual(12, points)
+
+        tricks, points = U.Rules.countCardPoints([[3,4,5],[0, 1, 2]])
+        self.assertEqual(2, tricks)
+        self.assertEqual(16, points)
+        
+    def test_countPartnerGamePoints(self): 
+        great_points, small_points = U.Rules.countPartnerGamePoints(120, 0, 0)
+        self.assertEqual(6, great_points)
+        self.assertEqual(-3, small_points)
+
+        great_points, small_points = U.Rules.countPartnerGamePoints(91, 0, 1)
+        self.assertEqual(4, great_points)
+        self.assertEqual(-2, small_points)
+
+        great_points, small_points = U.Rules.countPartnerGamePoints(61, 0, 1)
+        self.assertEqual(2, great_points)
+        self.assertEqual(-1, small_points)
+
+        great_points, small_points = U.Rules.countPartnerGamePoints(60, 0, 3)
+        self.assertEqual(-4, great_points)
+        self.assertEqual(2, small_points)
+
+        great_points, small_points = U.Rules.countPartnerGamePoints(30, 0, 4)
+        self.assertEqual(-6, great_points)
+        self.assertEqual(3, small_points)
+
+        great_points, small_points = U.Rules.countPartnerGamePoints(0, 0, 8)
+        self.assertEqual(-8, great_points)
+        self.assertEqual(4, small_points)        

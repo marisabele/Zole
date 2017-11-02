@@ -31,22 +31,6 @@ class BaseGame(object):
         for p in self.players:
             p.newGame()
 
-    def _countParterGamePoints(self, great_points, point_gain ,small_tricks):
-
-        if small_tricks == 0:     #If great winn all tricks
-            return (3 + point_gain) * 2, -1 * (3 + point_gain)
-        if great_points > 90:
-            return (2 + point_gain) * 2, -1 * (2 + point_gain)
-        if great_points > 60:
-            return (1 + point_gain) * 2, -1 * (1 + point_gain)
-
-        if great_points > 30:
-            return -1 *(2 + point_gain) * 2, 2 + point_gain
-        if small_tricks == 8:
-            return -1 *(4 + point_gain) * 2, 4 + point_gain
-        if small_tricks > 0:
-            return -1 *(3 + point_gain) * 2, 3 + point_gain
-
     def _countGamePoints(self, card_points, trick_counts):
         player_points = [0, 0, 0]
         roles = [x.contract for x in self.players]
@@ -57,7 +41,7 @@ class BaseGame(object):
             point_gain = 0
             if (Contract.BIG in roles):
                 point_gain = 4
-            great_points, small_points = self._countParterGamePoints(card_points[great_seat],
+            great_points, small_points = Rules.countPartnerGamePoints(card_points[great_seat],
                                                 point_gain,
                                                 small_tricks)
             player_points[great_seat] = great_points
@@ -81,18 +65,11 @@ class BaseGame(object):
         player_points = [x if x!=0 else small_points for x in player_points]
         return player_points
 
-    def _countCardPoints(self,tricks):
-        cards = []
-        for i in itertools.chain(*tricks):
-            cards.append(i)
-        points = sum([Cards.POINTS[x] for x in cards])
-        return len(tricks), points
-
     def _countPoints(self):
         card_points = []
         trick_count = []
         for p in self.players:
-            trickCount, points = self._countCardPoints(p.tricks)
+            trickCount, points = Rules.countCardPoints(p.tricks)
             card_points.append(points)
             trick_count.append(trickCount)
         return card_points, trick_count

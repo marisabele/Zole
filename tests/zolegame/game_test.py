@@ -170,52 +170,6 @@ class BaseGameTest(unittest.TestCase):
             self.assertEqual([[15],[16],[7, 5, 6]], player01.tricks)
             self.assertEqual([[2,1,0]], player03.tricks)
 
-        def test_countTricks(self):
-            tricks, points = self.game._countCardPoints([[0]])
-            self.assertEqual(1, tricks)
-            self.assertEqual(3, points)
-
-            tricks, points = self.game._countCardPoints([[0],[1]])
-            self.assertEqual(2, tricks)
-            self.assertEqual(6, points)
-
-            tricks, points = self.game._countCardPoints([[0, 1, 2]])
-            self.assertEqual(1, tricks)
-            self.assertEqual(9, points)
-
-            tricks, points = self.game._countCardPoints([[3],[0, 1, 2]])
-            self.assertEqual(2, tricks)
-            self.assertEqual(12, points)
-
-            tricks, points = self.game._countCardPoints([[3,4,5],[0, 1, 2]])
-            self.assertEqual(2, tricks)
-            self.assertEqual(16, points)
-
-        def test_countParterGamePoints(self):
-            great_points, small_points = self.game._countParterGamePoints(120, 0, 0)
-            self.assertEqual(6, great_points)
-            self.assertEqual(-3, small_points)
-
-            great_points, small_points = self.game._countParterGamePoints(91, 0, 1)
-            self.assertEqual(4, great_points)
-            self.assertEqual(-2, small_points)
-
-            great_points, small_points = self.game._countParterGamePoints(61, 0, 1)
-            self.assertEqual(2, great_points)
-            self.assertEqual(-1, small_points)
-
-            great_points, small_points = self.game._countParterGamePoints(60, 0, 3)
-            self.assertEqual(-4, great_points)
-            self.assertEqual(2, small_points)
-
-            great_points, small_points = self.game._countParterGamePoints(30, 0, 4)
-            self.assertEqual(-6, great_points)
-            self.assertEqual(3, small_points)
-
-            great_points, small_points = self.game._countParterGamePoints(0, 0, 8)
-            self.assertEqual(-8, great_points)
-            self.assertEqual(4, small_points)
-
         def test_countGamePointsTable(self):
             #_countGamePoints(self, card_points, trick_counts):
             player01 = self.PlayerFirst("01", "player01", 100)
