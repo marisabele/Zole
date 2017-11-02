@@ -1,3 +1,4 @@
+import itertools
 from constansts import *
 
 class Rules:
@@ -56,7 +57,7 @@ class Rules:
             cards.append(i)
         points = sum([Cards.POINTS[x] for x in cards])
         return len(tricks), points
-        
+
     @classmethod
     def countPartnerGamePoints(self, great_points, point_gain ,small_tricks):
 

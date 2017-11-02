@@ -1,4 +1,3 @@
-import itertools
 import random
 from constansts import *
 from rules import Rules
