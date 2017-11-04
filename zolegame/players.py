@@ -27,7 +27,6 @@ class PlayerInterface(object):
         pass
     def receiveMessage(self, message, data):
         # Called from game server
-        response = []
         if message == "init":
             self.newGame(data[0], data[1], data[2])
             return None

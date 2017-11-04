@@ -18,12 +18,6 @@ class RoomTest(unittest.TestCase):
             self.room.addPlayer(self.playerC)
             self.assertEqual(3, len(self.room.players))
 
-        def test_nextPlayer(self):
-            self.assertEqual(1, self.room.nextPlayer(0))
-            self.assertEqual(2, self.room.nextPlayer(1))
-            self.assertEqual(0, self.room.nextPlayer(2))
-            self.assertEqual(1, self.room.nextPlayer(0))
-
         def test_testPlay(self):
             playerA = RandomPlayer()
             playerB = RandomPlayer()

@@ -75,7 +75,7 @@ class BaseGame(object):
 
     def _playTricks(self):
         first = 0
-        for i in xrange(len(self.players[0].cards)):
+        for _ in xrange(len(self.players[0].cards)):
             second = Rules.nextPlayer(first)
             last = Rules.nextPlayer(second)
             first_index = self._playTrick([self.players[first].uuid,
