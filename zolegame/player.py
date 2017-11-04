@@ -52,7 +52,8 @@ class Player:
 
     def sendToClient(self, message, data):
         if self.client != None:
-            self.client.receiveMessage(message, data)
+            return self.client.receiveMessage(message, data)
+        return None
 
     def _sendToPublic(self,message, data):
         if self.game != None:

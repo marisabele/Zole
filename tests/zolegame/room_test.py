@@ -1,12 +1,14 @@
 import unittest
 from zolegame.room import Room
 from zolegame.player import Player
+from bots.random_player import RandomPlayer
+from zolegame.players import PlayerInterface
 
 class RoomTest(unittest.TestCase):
         def setUp(self):
-            self.playerA = Player("1", "A", 100)
-            self.playerB = Player("2", "B", 100)
-            self.playerC = Player("3", "B", 100)
+            self.playerA = PlayerInterface()
+            self.playerB = PlayerInterface()
+            self.playerC = PlayerInterface()
             self.room = Room(['t','d','d'], 10)
 
         def test_addPlayers(self):
@@ -21,3 +23,12 @@ class RoomTest(unittest.TestCase):
             self.assertEqual(2, self.room.nextPlayer(1))
             self.assertEqual(0, self.room.nextPlayer(2))
             self.assertEqual(1, self.room.nextPlayer(0))
+
+        def test_testPlay(self):
+            playerA = RandomPlayer()
+            playerB = RandomPlayer()
+            playerC = RandomPlayer()
+            self.room.addPlayer(playerA)
+            self.room.addPlayer(playerB)
+            self.room.addPlayer(playerC)
+            self.room.play()
